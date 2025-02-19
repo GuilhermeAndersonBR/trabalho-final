@@ -172,4 +172,10 @@ public final class Ship {
 
     }
 
+    public float getMoney() {
+
+        return this.type.getFixedValue() + this.type.getPerContainer() * this.containers.all().size() + this.type.getPerKilo() * this.containers.getTotalContainersWeight();
+
+    }
+
 }

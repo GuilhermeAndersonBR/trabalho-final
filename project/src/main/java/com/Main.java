@@ -1,11 +1,21 @@
 package com;
 
+import java.util.Optional;
+
 import com.data.DataBase;
 import com.errors.CannotCreateException;
+import com.errors.InvalidIndexException;
 import com.mvc.controllers.LockController;
+import com.mvc.controllers.OceanController;
+import com.mvc.controllers.RiverController;
 import com.mvc.controllers.ShipController;
 import com.mvc.models.lock.Lock;
+import com.mvc.models.ocean.Ocean;
+import com.mvc.models.river.River;
+import com.mvc.models.ship.classes.Ship;
 import com.mvc.views.LockView;
+import com.mvc.views.OceanView;
+import com.mvc.views.RiverView;
 import com.mvc.views.ShipView;
 
 public class Main {
@@ -14,7 +24,29 @@ public class Main {
 
     private static DataBase database = new DataBase();
 
+    private static void showSimulation(OceanView oceanView, RiverView riverView, LockView lockView) throws InvalidIndexException {
+        
+        Ocean ocean = Main.database.getOcean();
+        River river = Main.database.getRiver();
+        Lock lock = Main.database.getLock();
+
+        Optional<Ship> currentShip = lock.getShips().first();
+
+        while(currentShip.isPresent()) {
+
+            Ship verifiedCurrentShip = currentShip.get();
+
+            lock.setValue(verifiedCurrentShip.getMoney());
+
+        }
+
+    }
+
     public static void main(String[] args) {
+
+        OceanView oceanView = new OceanView();
+        RiverView riverView = new RiverView();
+        LockView lockView = new LockView();
 
         while(true) {
 
@@ -28,7 +60,17 @@ public class Main {
             switch (input) {
 
                 case 1 -> {
-                    System.out.println("A ser implementado :)");
+
+                    try {
+
+                        Main.showSimulation(oceanView, riverView, lockView);
+
+                    } catch (InvalidIndexException ex) {
+                        
+                        System.err.println(ex.getMessage());
+
+                    }
+
                 }
                 case 2 -> {
 
@@ -43,13 +85,29 @@ public class Main {
                         int createInput = Integer.parseInt(System.console().readLine());
 
                         switch (createInput) {
+                            case 1 -> {
+
+                                OceanController oceanController = new OceanController(oceanView);
+
+                                Ocean ocean = oceanController.createOcean();
+
+                                Main.database.setOcean(ocean);
+
+                            }
+                            case 2 -> {
+
+                                RiverController riverController = new RiverController(riverView);
+
+                                River river = riverController.createRiver();
+
+                                Main.database.setRiver(river);
+
+                            }
                             case 3 -> {
 
                                 ShipView shipView = new ShipView();
 
                                 ShipController shipController = new ShipController(shipView);
-
-                                LockView lockView = new LockView();
 
                                 LockController lockController = new LockController(lockView, shipController);
 
@@ -58,11 +116,18 @@ public class Main {
                                 Main.database.setLock(lock);
 
                             }
+                            case 4 -> {
+
+                                Main.database.reset();
+
+                            }
                             default -> throw new AssertionError();
                         }
 
                     } catch(CannotCreateException e) {
+
                         System.err.println(e.getMessage());
+
                     }
 
                 }

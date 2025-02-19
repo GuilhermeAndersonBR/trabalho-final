@@ -100,4 +100,10 @@ public class Containers {
 
     }
 
+    public float getTotalContainersWeight() {
+
+        return this.totalContainersWeight;
+
+    }
+
 }

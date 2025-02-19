@@ -13,6 +13,8 @@ public class Lock {
 
     private float flow;
 
+    private float value;
+
     private final Ships ships = new Ships();
  
     public Lock() {}
@@ -61,6 +63,14 @@ public class Lock {
 
         return this.ships;
 
+    }
+
+    public float getValue() {
+        return value;
+    }
+
+    public void setValue(float value) {
+        this.value = value;
     }
 
 }
